@@ -9,4 +9,4 @@ WORKDIR /app
 
 EXPOSE 5000
 
-CMD ["python", "app.py"]
+CMD ["gunicorn", "-w", "1", "-b", "0.0.0.0:$PORT", "app:app"]
