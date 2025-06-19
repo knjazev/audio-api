@@ -1,8 +1,6 @@
 FROM python:3.10-slim
 
-RUN apt update && \
-    apt install -y ffmpeg curl && \
-    pip install yt-dlp flask gunicorn
+RUN apt update &&     apt install -y ffmpeg curl &&     pip install --no-cache-dir yt-dlp flask gunicorn
 
 COPY . /app
 WORKDIR /app

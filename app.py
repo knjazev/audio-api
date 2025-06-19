@@ -1,9 +1,14 @@
 from flask import Flask, request, send_file
 import subprocess, os, uuid
 
-app = Flask(__name__)  # ← ОБЯЗАТЕЛЬНО до любых @app.route
-@app.route("/extract", methods=["POST"])
+app = Flask(__name__)
 
+@app.route("/", methods=["GET"])
+def index():
+    print("📡 GET / called")
+    return "✅ Audio API ready"
+
+@app.route("/extract", methods=["POST"])
 def extract():
     try:
         print("📥 /extract called")
