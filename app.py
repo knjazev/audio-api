@@ -18,11 +18,32 @@ def extract():
         mp3_path = f"/tmp/{uid}.mp3"
         wav_path = f"/tmp/{uid}.wav"
 
-        print("⬇️ Downloading audio...")
-        subprocess.run(["yt-dlp", "-f", "bestaudio", "-o", mp3_path, url], check=True)
+        print("⬇️ Downloading audio with yt-dlp...")
+        yt = subprocess.run([
+            "yt-dlp",
+            "--no-playlist",
+            "--extract-audio",
+            "--audio-format", "mp3",
+            "-o", mp3_path,
+            url
+        ], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
-        print("🎛 Converting to WAV...")
-        subprocess.run(["ffmpeg", "-y", "-i", mp3_path, wav_path], check=True)
+        print("📄 yt-dlp stdout:\n", yt.stdout)
+        print("⚠️ yt-dlp stderr:\n", yt.stderr)
+
+        if yt.returncode != 0 or not os.path.exists(mp3_path):
+            return jsonify({"error": "yt-dlp failed", "stderr": yt.stderr}), 500
+
+        print("🎛 Converting to WAV with ffmpeg...")
+        ff = subprocess.run([
+            "ffmpeg", "-y", "-i", mp3_path, wav_path
+        ], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+        print("📄 ffmpeg stdout:\n", ff.stdout)
+        print("⚠️ ffmpeg stderr:\n", ff.stderr)
+
+        if ff.returncode != 0 or not os.path.exists(wav_path):
+            return jsonify({"error": "ffmpeg failed", "stderr": ff.stderr}), 500
 
         print("✅ Sending file")
         return send_file(wav_path, mimetype="audio/wav")
