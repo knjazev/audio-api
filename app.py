@@ -1,3 +1,8 @@
+from flask import Flask, request, send_file
+import subprocess, os, uuid
+
+app = Flask(__name__)  # ← ОБЯЗАТЕЛЬНО до любых @app.route
+
 @app.route("/extract", methods=["POST"])
 def extract():
     print("📥 /extract called")
