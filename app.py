@@ -1,12 +1,10 @@
-from flask import Flask, request, send_file
-import subprocess, os, uuid
-
-app = Flask(__name__)
-
 @app.route("/extract", methods=["POST"])
 def extract():
+    print("📥 /extract called")
     data = request.json
     url = data.get("url")
+    print(f"🔗 URL = {url}")
+
     if not url:
         return {"error": "No URL"}, 400
 
@@ -19,11 +17,8 @@ def extract():
         subprocess.run(["ffmpeg", "-i", mp3, "-ar", "16000", "-ac", "1", "-c:a", "pcm_s16le", wav, "-y"], check=True)
         return send_file(wav, mimetype="audio/wav")
     except Exception as e:
+        print(f"❌ ERROR: {e}")
         return {"error": str(e)}, 500
     finally:
         for f in [mp3, wav]:
             if os.path.exists(f): os.remove(f)
-
-@app.route("/", methods=["GET"])
-def index():
-    return "✅ Audio API ready"
